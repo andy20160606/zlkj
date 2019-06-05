@@ -163,6 +163,7 @@ public class LoginController {
             if ("wxlogin".equals(logintype.trim())) {
                 SnsToken snsToken = SnsAPI.oauth2AccessToken(appid, secret, wxcode);
                 weixin.popular.bean.user.User wxuser = SnsAPI.userinfo(snsToken.getAccess_token(), snsToken.getOpenid(), "zh_CN");
+
                 if (wxuser.isSuccess()) {
                     userdb = userService.findByOpenid(wxuser.getOpenid());
                     if (userdb == null) {

@@ -1,10 +1,7 @@
 package cn.youguang.controller;
 
 
-import cn.youguang.entity.Hd;
-import cn.youguang.entity.Kjdw;
 import cn.youguang.entity.Kjrz;
-import cn.youguang.entity.User;
 import cn.youguang.service.HdService;
 import cn.youguang.service.KjdwService;
 import cn.youguang.service.KjrzService;
@@ -41,15 +38,13 @@ public class KjrzController {
     private static final Logger LOGGER = LoggerFactory.getLogger(KjrzController.class);
 
 
-    @Autowired
-    private HdService hdService;
+
 
 
     @Autowired
     private KjdwService kjdwService;
 
-    @Autowired
-    private UserService userService;
+
 
     @Autowired
     private KjrzService kjrzService;
@@ -65,7 +60,6 @@ public class KjrzController {
 
         Result result = new Result();
         try {
-
             result = kjdwService.kj(userId, kjdwId);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -78,6 +72,8 @@ public class KjrzController {
 
 
     /**
+     *
+     * 查询砍价队伍下的砍价日志
      * @param
      * @return
      */
@@ -96,25 +92,6 @@ public class KjrzController {
         return result;
     }
 
-
-    @RequestMapping(value = "/checkJoinHdByDzIdAndHdId", method = RequestMethod.GET)
-    @ResponseBody
-    public Result checkJoinHdByDzIdAndHdId(@RequestParam Long dzId, @RequestParam Long hdId) {
-        Result result = new Result();
-        try {
-            List<Kjdw> kjdws = kjdwService.findByHdIdAndDzId(hdId, dzId);
-            if (kjdws != null && !kjdws.isEmpty()) {
-                result.setObj(true);
-                return result;
-            }
-            result.setSuccess(true);
-        } catch (RuntimeException e) {
-            result.setMsg(e.getMessage());
-
-        }
-        result.setObj(false);
-        return result;
-    }
 
 
 }

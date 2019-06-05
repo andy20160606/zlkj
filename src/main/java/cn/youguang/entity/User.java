@@ -23,6 +23,8 @@ public class User extends IdEntity {
     private Integer sex;
     private Integer age;
     private Integer status;
+
+    private String headimgurl;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdate;
     private String phone;
@@ -148,9 +150,16 @@ public class User extends IdEntity {
         this.wxopenid = wxopenid;
     }
 
+    public String getHeadimgurl() {
+        return headimgurl;
+    }
+
+    public void setHeadimgurl(String headimgurl) {
+        this.headimgurl = headimgurl;
+    }
 
 
-    //    public String getOrgids() {
+//    public String getOrgids() {
 //        String ret = null;
 //        for (Organization organization : orgs) {
 //            if (ret == null)

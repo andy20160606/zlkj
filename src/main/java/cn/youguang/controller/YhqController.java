@@ -1,13 +1,7 @@
 package cn.youguang.controller;
 
 
-import cn.youguang.entity.Hd;
-import cn.youguang.entity.Kjdw;
-import cn.youguang.entity.User;
 import cn.youguang.entity.Yhq;
-import cn.youguang.service.HdService;
-import cn.youguang.service.KjdwService;
-import cn.youguang.service.UserService;
 import cn.youguang.service.YhqService;
 import cn.youguang.util.Result;
 import io.swagger.annotations.Api;
@@ -24,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @description：活动管理
+ * @description：优惠券管理
  */
 @Controller
 @RequestMapping("/yhq")

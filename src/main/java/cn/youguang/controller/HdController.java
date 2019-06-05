@@ -4,10 +4,13 @@ package cn.youguang.controller;
 import cn.youguang.entity.Hd;
 import cn.youguang.entity.Info;
 import cn.youguang.entity.Kjdw;
+import cn.youguang.entity.Role;
 import cn.youguang.service.HdService;
 import cn.youguang.service.InfoService;
 import cn.youguang.service.KjdwService;
+import cn.youguang.util.PageInfo;
 import cn.youguang.util.Result;
+import cn.youguang.util.StringUtil;
 import cn.youguang.util.StringUtils;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description：活动管理
@@ -59,6 +64,9 @@ public class HdController {
 
         Result result = new Result();
         try {
+            hd.setLlrs(0); //初始化设置参与人数为0
+            hd.setCykjrs(0); //初始化设置参与砍价人数为0
+            hd.setHjrs(0); //初始化设置已获奖人数为0
             hdService.save(hd);
             result.setMsg("添加活动成功");
             result.setSuccess(true);
@@ -95,6 +103,22 @@ public class HdController {
     }
 
 
+    @RequestMapping(value = "/ppllrsByHdId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result ppllrsByHdId(@RequestParam Long hdId) {
+
+        Result result = new Result();
+        try {
+
+            result = hdService.ppllrsByHdId(hdId);
+
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+        }
+        return result;
+    }
+
+
     /**
      * @param
      * @return
@@ -115,43 +139,26 @@ public class HdController {
         return result;
     }
 
-
     /**
-     * @param
      * @return
      */
-    @RequestMapping(value = "/findByKhwybs", method = RequestMethod.GET)
+    @RequestMapping(value = "/dataTables", method = RequestMethod.GET)//, )
     @ResponseBody
-    public Result findById(@RequestParam String khwybs) {
-        Result result = new Result();
-        try {
+    public PageInfo dataTables(@ModelAttribute PageInfo pageInfo, @RequestParam String khwybs, @RequestParam Date stoptime) {
+//        PageInfo pageInfo = new PageInfo(page, rows, sort, order);
+        Map<String, Object> condition = new HashMap<String, Object>();
 
-            List<Hd> hds = hdService.findByKhwybs(khwybs);
-            result.setObj(hds);
-            result.setSuccess(true);
-        } catch (RuntimeException e) {
-            result.setMsg(e.getMessage());
 
+        if (StringUtils.isNotEmpty(khwybs)) {
+            condition.put("khwybs", khwybs);
         }
-        return result;
-    }
-
-
-    @RequestMapping(value = "/checkJoinHdByUserId", method = RequestMethod.GET)
-    @ResponseBody
-    public Result checkJoinHdByUserId(@RequestParam Long dzId, @RequestParam Long hdId) {
-        Result result = new Result();
-        try {
-            List<Kjdw> kjdws = kjdwService.findByHdIdAndDzId(hdId, dzId);
-            if (kjdws.size() > 0) {
-                result.setObj(true);
-            }
-            result.setSuccess(true);
-        } catch (RuntimeException e) {
-            result.setMsg(e.getMessage());
-
+        if (StringUtils.isNotBlank(khwybs)) {
+            condition.put("stoptime", stoptime);
         }
-        return result;
+        pageInfo.setCondition(condition);
+
+        hdService.findDataTables(pageInfo);
+        return pageInfo;
     }
 
 

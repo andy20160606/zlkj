@@ -24,7 +24,7 @@ public class Yhq extends IdEntity {
     private Date jsrq; //结束日期
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date hqsj;
+    private Date hqsj;   //获取优惠券日期
 
     private String yhm;  //优惠码
 

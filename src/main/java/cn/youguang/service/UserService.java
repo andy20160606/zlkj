@@ -206,6 +206,7 @@ public class UserService {
 		userdb.setCreatedate(new Date());
 		userdb.setStatus(0);
 		userdb.setOrgs(organizations);
+		userdb.setHeadimgurl(user.getHeadimgurl());
 		return userdb;
 	}
 

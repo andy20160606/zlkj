@@ -30,12 +30,12 @@ public class PageInfo {
     private int from;
     @JsonIgnore
     private int size;
-    @JsonIgnore
+
     private int nowpage; // 当前页 
-    @JsonIgnore
+
     private int pagesize; // 每页显示的记录数
 
-    @JsonIgnore
+
     private int totalPages; //总页数
     @JsonIgnore
     private Map<String, Object> condition; //查询条件
@@ -184,6 +184,7 @@ public class PageInfo {
         return new PageRequest(nowpage - 1, pagesize, prsort);
     }
 
+    @JsonIgnore
     public Sort getJpaSort() {
         if ("asc".equals(order)) {
             return new Sort(new Order(Direction.ASC, this.sort));

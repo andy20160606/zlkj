@@ -1,6 +1,7 @@
 package cn.youguang.controller;
 
 
+import cn.youguang.util.QrCodeCreateUtil;
 import cn.youguang.util.Result;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -17,6 +18,10 @@ import weixin.popular.bean.token.Token;
 import weixin.popular.util.JsUtil;
 import weixin.popular.util.JsonUtil;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +69,19 @@ public class WxController {
         return result;
     }
 
+
+    @RequestMapping(value = "/shareQrcodeByContent", method = RequestMethod.GET)
+    public void shareQrcodeByContent(@RequestParam String content, HttpServletResponse response) {
+        try {
+            BufferedImage bufferedImage = QrCodeCreateUtil.createQrCode(content);
+            ServletOutputStream out = response.getOutputStream();
+            ImageIO.write(bufferedImage, "jpg", out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
 

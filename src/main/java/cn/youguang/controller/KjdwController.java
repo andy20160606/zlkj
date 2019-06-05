@@ -7,22 +7,36 @@ import cn.youguang.entity.User;
 import cn.youguang.service.HdService;
 import cn.youguang.service.KjdwService;
 import cn.youguang.service.UserService;
+import cn.youguang.util.QrCodeCreateUtil;
 import cn.youguang.util.Result;
+import cn.youguang.util.VerifyCodeUtil;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import weixin.popular.api.QrcodeAPI;
+import weixin.popular.api.TokenAPI;
+import weixin.popular.bean.qrcode.QrcodeTicket;
+import weixin.popular.bean.token.Token;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 /**
- * @description：活动管理
+ * @description：砍价队伍管理
  */
 @Controller
 @RequestMapping("/kjdw")
@@ -56,44 +70,31 @@ public class KjdwController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
-    public Result add(@RequestParam Long hdId,@RequestParam Long dzId,@RequestBody Kjdw kjdw) {
+    public Result add(@RequestParam Long hdId, @RequestParam Long dzId, @RequestBody(required = false) Kjdw kjdw) {
 
         Result result = new Result();
         try {
+
+            result = kjdwService.checkCanJoinHdByDzIdAndHdId(dzId, hdId);
+            if (!result.isSuccess()) {
+                return result;
+            }
+
             Hd hd = hdService.findById(hdId);
             User dz = userService.findUserById(dzId);
             kjdw.setDz(dz);
             kjdw.setHd(hd);
             kjdw.setDwcjsj(new Date());
+            kjdw.setDqkjdj(hd.getYj());
+            kjdw.setYkjje(0.0);
+            kjdw.setSykjje(hd.getYj() - hd.getDj());
             kjdwService.save(kjdw);
-            result.setMsg("添加活动成功");
+            result.setMsg("创建队伍成功");
             result.setSuccess(true);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
-
         }
-
         return result;
-
-    }
-
-
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    @ResponseBody
-    public Result update(@RequestBody Hd hd) {
-
-        Result result = new Result();
-        try {
-            hdService.save(hd);
-            result.setMsg("添加活动成功");
-            result.setSuccess(true);
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-
-        }
-
-        return result;
-
     }
 
 
@@ -106,9 +107,8 @@ public class KjdwController {
     public Result findById(@RequestParam Long id) {
         Result result = new Result();
         try {
-
-            Hd hd = hdService.findById(id);
-            result.setObj(hd);
+            Kjdw kjdw = kjdwService.findById(id);
+            result.setObj(kjdw);
             result.setSuccess(true);
         } catch (RuntimeException e) {
             result.setMsg(e.getMessage());
@@ -118,16 +118,12 @@ public class KjdwController {
     }
 
 
-    @RequestMapping(value = "/checkJoinHdByUserId", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkCanJoinHdByDzIdAndHdId", method = RequestMethod.GET)
     @ResponseBody
-    public Result checkJoinHdByUserId(@RequestParam Long dzId, @RequestParam Long hdId) {
+    public Result checkJoinHdByDzIdAndHdId(@RequestParam Long dzId, @RequestParam Long hdId) {
         Result result = new Result();
         try {
-            List<Kjdw> kjdws = kjdwService.findByHdIdAndDzId(hdId, dzId);
-            if(kjdws.size() > 0){
-                result.setObj(true);
-            }
-            result.setSuccess(true);
+            result = kjdwService.checkCanJoinHdByDzIdAndHdId(dzId, hdId);
         } catch (RuntimeException e) {
             result.setMsg(e.getMessage());
 

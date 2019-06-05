@@ -39,26 +39,6 @@ public class KjdwService {
     private KjrzDao kjrzDao;
 
 
-    public void findDataTables(PageInfo pageInfo) {
-
-        Page<Yhq> yhqs;
-        Long userId = (Long) pageInfo.getCondition().get("userId");
-
-
-        if (userId != null) {
-            User user = userDao.findById(userId);
-            yhqs = yhqDao.findByUser(user, pageInfo.getPagerequest());
-        } else {
-            yhqs = yhqDao.findAll(pageInfo.getPagerequest());
-        }
-
-
-        pageInfo.setRows(yhqs.getContent());
-        pageInfo.setTotal(yhqs.getTotalElements());
-
-
-    }
-
     public List<Yhq> findList(Map<String, Object> condition) {
 
         Long userId = (Long) condition.get("userId");
@@ -109,6 +89,14 @@ public class KjdwService {
         Result result = new Result();
 
         Kjdw kjdw = kjdwDao.findOne(kjdwId);
+        Hd hd = kjdw.getHd();
+
+
+        // 若活动过期则无法参与砍价
+        if (hd.getStoptime().before(new Date())) {
+            result.setMsg("活动时间已过期，无法帮助队长砍价了");
+            return result;
+        }
 
 
         if (kjdw.getSykjje() <= 0) {
@@ -133,17 +121,19 @@ public class KjdwService {
         kjrz.setKjqj(kjdw.getDqkjdj());
         kjrz.setKjhj(kjdw.getDqkjdj() - kjrz.getKjje());
         kjrz.setKjsj(new Date());
-
         kjrzDao.save(kjrz);
         kjdw.setDqkjdj(kjdw.getDqkjdj() - kjrz.getKjje());
         kjdw.setYkjje(kjdw.getYkjje() + kjrz.getKjje());
         kjdw.setSykjje(kjdw.getSykjje() - kjrz.getKjje());
-
         kjdwDao.save(kjdw);
-
         result.setMsg("砍价成功");
+
+
+        hd.setCykjrs(hd.getCykjrs() + 1);
+
         //发放优惠券给队长
         if (kjdw.getDqkjdj() <= kjdw.getHd().getDj()) {
+            hd.setHjrs(hd.getHjrs() + 1);
             result.setMsg("砍价成功，并且队长已经获取奖励了，赶快通知队长吧");
             Yhq yhq = new Yhq();
             yhq.setHd(kjdw.getHd());
@@ -153,10 +143,40 @@ public class KjdwService {
             yhq.setHqsj(new Date());
             yhqDao.save(yhq);
         }
+
+        //更新hd信息
+        hdDao.save(hd);
+
+
         return result;
     }
 
     public List<Kjdw> findByHdId(Long id) {
         return kjdwDao.findByHd(id);
+    }
+
+    public Result checkCanJoinHdByDzIdAndHdId(Long dzId, Long hdId) {
+
+        Result result = new Result();
+        Hd hd = hdDao.findOne(hdId);
+
+        if (hd.getHjrs() >= hd.getHjcs()) {
+            result.setMsg("获奖人数已达到上线不能继续参与了");
+            result.setSuccess(false);
+            return result;
+        }
+
+
+        List<Kjdw> kjdws = findByHdIdAndDzId(hdId, dzId);
+
+
+        if (kjdws.size() < hd.getHjcs()) {
+            result.setSuccess(true);
+        } else {
+            result.setSuccess(false);
+            result.setMsg("队伍最多参与次数已达到限制，不可继续参与了");
+        }
+        return result;
+
     }
 }

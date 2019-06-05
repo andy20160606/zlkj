@@ -8,11 +8,16 @@ import cn.youguang.repository.HdDao;
 import cn.youguang.repository.UserDao;
 import cn.youguang.repository.YhqDao;
 import cn.youguang.util.PageInfo;
+import cn.youguang.util.Result;
+import cn.youguang.util.StringUtil;
+import com.sun.istack.internal.NotNull;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,41 +52,56 @@ public class HdService {
 
     public void findDataTables(PageInfo pageInfo) {
 
-        Page<Yhq> yhqs;
-        Long userId = (Long) pageInfo.getCondition().get("userId");
+        Page<Hd> hds;
+        String khwybs = (String) pageInfo.getCondition().get("khwybs");
+        Date stoptime = (Date) pageInfo.getCondition().get("stoptime");
 
+        if (StringUtils.isNotEmpty(khwybs) && stoptime != null) {
 
-        if (userId != null) {
-            User user = userDao.findById(userId);
-            yhqs = yhqDao.findByUser(user, pageInfo.getPagerequest());
+            hds = hdDao.findByKhwybsAndStoptimeAfter(khwybs, stoptime, pageInfo.getPagerequest());
+
+        } else if (StringUtils.isNotEmpty(khwybs)) {
+            hds = hdDao.findByKhwybs(khwybs, pageInfo.getPagerequest());
+        } else if (stoptime != null) {
+            hds = hdDao.findByStoptimeAfter(stoptime, pageInfo.getPagerequest());
         } else {
-            yhqs = yhqDao.findAll(pageInfo.getPagerequest());
+            hds = hdDao.findAll(pageInfo.getPagerequest());
         }
-
-
-        pageInfo.setRows(yhqs.getContent());
-        pageInfo.setTotal(yhqs.getTotalElements());
-
-
-    }
-
-    public List<Yhq> findList(Map<String, Object> condition) {
-
-        Long userId = (Long) condition.get("userId");
-        List<Yhq> yhqs;
-        if (userId != null) {
-            User user = userDao.findById(userId);
-            yhqs = yhqDao.findByUser(user);
-        } else {
-            yhqs = yhqDao.findAll();
-        }
-
-        return yhqs;
-
+        pageInfo.setRows(hds.getContent());
+        pageInfo.setTotal(hds.getTotalElements());
+        pageInfo.setTotalPages(hds.getTotalPages());
     }
 
 
-    public List<Hd> findByKhwybs(String khwybs) {
-        return hdDao.findByKhwybs(khwybs);
+    public Result ppllrsByHdId(@NotNull Long hdId) {
+        Result result = new Result();
+
+        Hd hd = hdDao.findOne(hdId);
+        hd.setLlrs(hd.getLlrs() + 1);
+        hdDao.save(hd);
+        result.setSuccess(true);
+        return result;
     }
+
+    public Result pphjrsByHdId(@NotNull Long hdId) {
+        Result result = new Result();
+
+        Hd hd = hdDao.findOne(hdId);
+        hd.setHjrs(hd.getHjcs() + 1);
+        hdDao.save(hd);
+        result.setSuccess(true);
+        return result;
+    }
+
+    public Result ppcykjrsByHdId(@NotNull Long hdId) {
+        Result result = new Result();
+
+        Hd hd = hdDao.findOne(hdId);
+        hd.setCykjrs(hd.getCykjrs() + 1);
+        hdDao.save(hd);
+        result.setSuccess(true);
+        return result;
+    }
+
+
 }

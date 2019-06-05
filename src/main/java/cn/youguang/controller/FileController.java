@@ -1,6 +1,7 @@
 package cn.youguang.controller;
 
 import cn.youguang.util.Result;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,9 @@ import java.util.UUID;
  * @Author sgl
  * @Date 2018-05-15 14:04
  */
+
+
+@Api(value = "文件Controller", tags = {"文件操作接口"})
 @Controller
 @RequestMapping("/file")
 public class FileController {
