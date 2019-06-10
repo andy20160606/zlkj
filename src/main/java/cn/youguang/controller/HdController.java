@@ -103,21 +103,6 @@ public class HdController {
     }
 
 
-    @RequestMapping(value = "/ppllrsByHdId", method = RequestMethod.GET)
-    @ResponseBody
-    public Result ppllrsByHdId(@RequestParam Long hdId) {
-
-        Result result = new Result();
-        try {
-
-            result = hdService.ppllrsByHdId(hdId);
-
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-        }
-        return result;
-    }
-
 
     /**
      * @param

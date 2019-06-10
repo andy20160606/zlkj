@@ -94,7 +94,7 @@ public class KjdwService {
 
         // 若活动过期则无法参与砍价
         if (hd.getStoptime().before(new Date())) {
-            result.setMsg("活动时间已过期，无法帮助队长砍价了");
+            result.setMsg("活动时间已过期");
             return result;
         }
 
@@ -105,6 +105,12 @@ public class KjdwService {
         }
 
         User kjr = userDao.findById(userId);
+
+        if(kjr == null){
+            result.setMsg("用户不存在，请重新登录后进行砍价");
+            return result;
+        }
+
         Kjrz kjrzDb = kjrzDao.findByKjrAndKjdw(kjr, kjdw);
         if (kjrzDb != null) {
             result.setMsg("已经为队长砍过价，请不要重复砍价");
@@ -141,6 +147,7 @@ public class KjdwService {
             yhq.setUser(kjdw.getDz());
             yhq.setYhm(System.currentTimeMillis() + "");
             yhq.setHqsj(new Date());
+            yhq.setYxzt(1);
             yhqDao.save(yhq);
         }
 
@@ -151,14 +158,22 @@ public class KjdwService {
         return result;
     }
 
-    public List<Kjdw> findByHdId(Long id) {
-        return kjdwDao.findByHd(id);
+    public List<Kjdw> findByHdId(Long hdId) {
+        Hd hd = hdDao.findOne(hdId);
+        return kjdwDao.findByHd(hd);
     }
 
     public Result checkCanJoinHdByDzIdAndHdId(Long dzId, Long hdId) {
 
         Result result = new Result();
         Hd hd = hdDao.findOne(hdId);
+
+        // 若活动过期则无法参与砍价
+        if (hd.getStoptime().before(new Date())) {
+            result.setMsg("活动时间已过期");
+            return result;
+        }
+
 
         if (hd.getHjrs() >= hd.getHjcs()) {
             result.setMsg("获奖人数已达到上线不能继续参与了");

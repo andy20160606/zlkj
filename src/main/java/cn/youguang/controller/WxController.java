@@ -1,6 +1,7 @@
 package cn.youguang.controller;
 
 
+import cn.youguang.util.QRCodeKit;
 import cn.youguang.util.QrCodeCreateUtil;
 import cn.youguang.util.Result;
 import io.swagger.annotations.Api;
@@ -22,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ import java.util.HashMap;
  */
 @Controller
 @RequestMapping("/wx")
-@Api(value = "微信Controller",tags = {"微信操作接口"})
+@Api(value = "微信Controller", tags = {"微信操作接口"})
 public class WxController {
 
 
@@ -39,6 +41,10 @@ public class WxController {
     private String appid;
     @Value("${wx.secret}")
     private String secret;
+
+    @Value("${file.UploadDir}")
+    private String filePath;
+
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -55,13 +61,13 @@ public class WxController {
     public Result getJsCfgByUrl(@RequestParam String url) {
         Result result = new Result();
         try {
-            Token token = TokenAPI.token(appid,secret);
+            Token token = TokenAPI.token(appid, secret);
             Ticket ticket = TicketAPI.ticketGetticket(token.getAccess_token());
-            String jsCfg = JsUtil.generateConfigJson(ticket.getTicket(),true,appid,url,null);
-            HashMap<String,String> jsCfgMap = JsonUtil.parseObject(jsCfg,HashMap.class);
+            String jsCfg = JsUtil.generateConfigJson(ticket.getTicket(), true, appid, url, null);
+            HashMap<String, String> jsCfgMap = JsonUtil.parseObject(jsCfg, HashMap.class);
             result.setObj(jsCfgMap);
             result.setSuccess(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setMsg(e.getMessage());
         }
@@ -79,10 +85,22 @@ public class WxController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
+
+    @RequestMapping(value = "/createQRCodeWithLogo", method = RequestMethod.GET)
+    public void shareQrcodeByContent(@RequestParam String content, @RequestParam String fileName, HttpServletResponse response) {
+        try {
+            File logoFile = new File(filePath + fileName);
+            BufferedImage bufferedImage = QRCodeKit.createQRCodeWithLogo(content, logoFile);
+
+
+            ServletOutputStream out = response.getOutputStream();
+            ImageIO.write(bufferedImage, "jpg", out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

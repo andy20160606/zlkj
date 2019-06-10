@@ -26,21 +26,20 @@ public class Yhq extends IdEntity {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date hqsj;   //获取优惠券日期
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date sysj;  //优惠券使用时间
+
     private String yhm;  //优惠码
 
-    private Integer yxzt;//有效状态
+    private Integer yxzt;//有效状态 0为使用过了  1为可使用
+
 
     @ManyToOne
-    @JsonIgnore
     private User user;
 
 
     @ManyToOne
     private Hd hd;
-
-
-
-
 
 
 }

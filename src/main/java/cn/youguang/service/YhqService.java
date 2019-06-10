@@ -7,7 +7,10 @@ import cn.youguang.entity.Yhq;
 import cn.youguang.repository.HdDao;
 import cn.youguang.repository.UserDao;
 import cn.youguang.repository.YhqDao;
+import cn.youguang.util.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +42,6 @@ public class YhqService {
     }
 
 
-
-
-
     public List<Yhq> findByHdId(Long hdId) {
         Hd hd = hdDao.findOne(hdId);
         List<Yhq> yhqs = yhqDao.findByHd(hd);
@@ -53,5 +53,32 @@ public class YhqService {
         User user = userDao.findOne(userId);
         List<Yhq> yhqs = yhqDao.findByUser(user);
         return yhqs;
+    }
+
+    public List<Yhq> findByHds(List<Hd> hds) {
+        return yhqDao.findByHdIn(hds);
+    }
+
+    public void findDataTables(PageInfo pageInfo) {
+
+        String khwybs = (String) pageInfo.getCondition().get("khwybs");
+
+
+        Page<Yhq> yhqs;
+
+
+        if (StringUtils.isNotEmpty(khwybs)) {
+            List<Hd> hds = hdDao.findByKhwybs(khwybs);
+
+            yhqs = yhqDao.findByHdIn(hds,pageInfo.getPagerequest());
+
+        }else {
+            yhqs = yhqDao.findAll(pageInfo.getPagerequest());
+        }
+
+
+       pageInfo.finishFromJpaPages(yhqs);
+
+
     }
 }

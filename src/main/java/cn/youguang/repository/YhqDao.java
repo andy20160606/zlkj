@@ -18,4 +18,8 @@ public interface YhqDao extends JpaRepository<Yhq, Long> {
     List<Yhq> findByUser(User user);
 
     List<Yhq> findByHd(Hd hd);
+
+    List<Yhq> findByHdIn(List<Hd> hds);
+
+    Page<Yhq> findByHdIn(List<Hd> hds, Pageable pagerequest);
 }

@@ -117,6 +117,49 @@ public class KjdwController {
         return result;
     }
 
+    /**
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/findListByHdId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result findListByHdId(@RequestParam Long hdId) {
+        Result result = new Result();
+        try {
+
+            List<Kjdw> kjdws = kjdwService.findByHdId(hdId);
+            result.setObj(kjdws);
+            result.setSuccess(true);
+        } catch (RuntimeException e) {
+            result.setMsg(e.getMessage());
+
+        }
+        return result;
+    }
+
+
+    /**
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/findListByHdIdAndDzId", method = RequestMethod.GET)
+    @ResponseBody
+    public Result findListByHdIdAndDzId(@RequestParam Long hdId,@RequestParam Long dzId) {
+        Result result = new Result();
+        try {
+
+            List<Kjdw> kjdws = kjdwService.findByHdIdAndDzId(hdId,dzId);
+            result.setObj(kjdws);
+            result.setSuccess(true);
+        } catch (RuntimeException e) {
+            result.setMsg(e.getMessage());
+
+        }
+        return result;
+    }
+
+
+
 
     @RequestMapping(value = "/checkCanJoinHdByDzIdAndHdId", method = RequestMethod.GET)
     @ResponseBody

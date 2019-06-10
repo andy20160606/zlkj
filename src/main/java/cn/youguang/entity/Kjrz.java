@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -17,9 +18,11 @@ public class Kjrz extends IdEntity {
 
 
     @ManyToOne
+    @NotNull
     private User kjr;  //砍价人
 
     @ManyToOne
+    @NotNull
     private Kjdw kjdw;  //所属砍价队伍
 
     private Double kjqj;//砍价前价格
@@ -32,6 +35,7 @@ public class Kjrz extends IdEntity {
     private Date kjsj;//砍价时间
 
     @ManyToOne
+    @NotNull
     private Hd hd;  //砍价日志所属活动 方便判定 用户是否为这个活动砍过价
 
 

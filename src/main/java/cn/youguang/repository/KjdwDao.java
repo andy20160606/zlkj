@@ -14,5 +14,5 @@ public interface KjdwDao extends JpaRepository<Kjdw, Long> {
     List<Kjdw> findByHdAndDz(Hd hd, User dz);
 
 
-    List<Kjdw> findByHd(Long id);
+    List<Kjdw> findByHd(Hd id);
 }
