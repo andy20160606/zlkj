@@ -125,11 +125,11 @@ public class YhqController {
 
         try {
             Yhq yhq = yhqService.findById(id);
-            if (yhq.getYxzt() != null && yhq.getYxzt() == 1) {
+            if (yhq.getYxzt() != null && yhq.getYxzt() == 0) {
                 result.setMsg("优惠券已使用过，不可重复使用");
                 return result;
             }
-            yhq.setYxzt(0);  //有效状态
+            yhq.setYxzt(0);  //有效状态设置为使用过了
             yhq.setSysj(new Date());
             yhqService.save(yhq);
             result.setMsg("优惠券使用成功");

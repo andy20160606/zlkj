@@ -8,6 +8,7 @@ import cn.youguang.service.KjrzService;
 import cn.youguang.service.UserService;
 import cn.youguang.util.Result;
 import io.swagger.annotations.Api;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,8 @@ public class KjrzController {
     private static final Logger LOGGER = LoggerFactory.getLogger(KjrzController.class);
 
 
-
-
-
     @Autowired
     private KjdwService kjdwService;
-
 
 
     @Autowired
@@ -56,11 +53,15 @@ public class KjrzController {
      */
     @RequestMapping(value = "/kj", method = RequestMethod.POST)
     @ResponseBody
-    public Result kj(@RequestParam Long userId, @RequestParam Long kjdwId) {
+    public Result kj(@RequestParam(required = false) Long userId, @RequestParam Long kjdwId) {
 
         Result result = new Result();
         try {
-            result = kjdwService.kj(userId, kjdwId);
+
+            Long id = (Long) SecurityUtils.getSubject().getPrincipal();
+
+
+            result = kjdwService.kj(id, kjdwId);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
@@ -72,8 +73,8 @@ public class KjrzController {
 
 
     /**
-     *
      * 查询砍价队伍下的砍价日志
+     *
      * @param
      * @return
      */
@@ -91,7 +92,6 @@ public class KjrzController {
         }
         return result;
     }
-
 
 
 }

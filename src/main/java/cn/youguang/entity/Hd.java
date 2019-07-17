@@ -23,7 +23,7 @@ public class Hd extends IdEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date stoptime;  //活动结束时间
 
-    private Integer hdts;
+    private Integer hdts; //活动天数
 
     private String dwmc;  //单位名称
 
@@ -41,17 +41,22 @@ public class Hd extends IdEntity {
 
     private String cpjs; //产品介绍
 
+    @NotNull
     private String cpsl;  //产品数量
 
+    @NotNull
     private Double yj; //原价
 
+    @NotNull
     private Double dj; //现价
 
+    @NotNull
     private Double dykjje; //队员砍价金额大小
 
     @NotNull
     private Integer hjcs; //获奖次数
 
+    @NotNull
     private String khwybs;//客户唯一标识
 
     private Integer hjrs; //已获奖人数

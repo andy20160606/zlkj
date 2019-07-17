@@ -123,26 +123,10 @@ public class ShiroCfg {
         filterChainDefinitionMap.put("/swagger-resources", "anon");
         filterChainDefinitionMap.put("/v2/api-docs", "anon");
         filterChainDefinitionMap.put("/webjars/springfox-swagger-ui/**", "anon");
-        filterChainDefinitionMap.put("/static/**", "anon");
-        filterChainDefinitionMap.put("/Mall/Login.html", "anon");
-        filterChainDefinitionMap.put("/Mall/css/**", "anon");
-        filterChainDefinitionMap.put("/Mall/js/**", "anon");
-        filterChainDefinitionMap.put("/Mall/image/**", "anon");
-        filterChainDefinitionMap.put("/Mall/image/**/**", "anon");
-        filterChainDefinitionMap.put("/product/login.html", "anon");
-        filterChainDefinitionMap.put("/product/css/**", "anon");
-        filterChainDefinitionMap.put("/product/fonts/**", "anon");
-        filterChainDefinitionMap.put("/product/img/**", "anon");
-        filterChainDefinitionMap.put("/product/js/**", "anon");
-        filterChainDefinitionMap.put("/product/lib/**", "anon");
-        filterChainDefinitionMap.put("/product/lib/**/**", "anon");
-        filterChainDefinitionMap.put("/product/pages/**", "anon");
-        filterChainDefinitionMap.put("/ptlogin/**", "anon");
-        filterChainDefinitionMap.put("/mylogin/**", "anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/wxlogin", "anon");
         filterChainDefinitionMap.put("/verifyCode", "anon");
-        filterChainDefinitionMap.put("/**", "anon");
+        filterChainDefinitionMap.put("/**", "authc");
         //       filterChainDefinitionMap.put("/**", " authc");
 //        filterChainDefinitionMap.put("/js*//**//**", "anon");
         shiroFilterFactoryBean

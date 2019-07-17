@@ -51,8 +51,6 @@ public class LoginController {
     private UserService userService;
 
 
-
-
     /**
      * 首页
      *
@@ -178,7 +176,7 @@ public class LoginController {
                     return result;
                 }
             }
-            if ("ptlogin".equals(logintype)) {
+            if ("khlogin".equals(logintype)) {
                 if (StringUtils.isBlank(username)) {
                     result.setMsg("用户名不能为空");
                     return result;
@@ -187,40 +185,13 @@ public class LoginController {
                     result.setMsg("密码不能为空");
                     return result;
                 }
-                if (StringUtils.isBlank(verifycode)) {
-                    result.setMsg("验证码不能为空");
-                    return result;
-                }
-                if (!StringUtils.isBlank(verifycode)) {
-                    String verifyCode = (String) request.getSession().getAttribute("verifyCode");
-                    if (!verifyCode.equals(verifycode)) {
-                        result.setMsg("验证码错误");
-                        return result;
-                    }
-
-                }
-
-                userdb = userService.findUserByLoginName(username);
                 token = new MyUsernamePasswordToken(username.trim(), password.trim(), logintype);
-                token.setRememberMe(true);
                 user.login(token);
             }
 
 
-        } catch (UnknownAccountException e) {
-            LOGGER.error("账号不存在：{}", e);
-            result.setMsg("账号不存在");
-            return result;
-        } catch (DisabledAccountException e) {
-            LOGGER.error("账号未启用：{}", e);
-            result.setMsg("账号未启用");
-            return result;
-        } catch (IncorrectCredentialsException e) {
-            LOGGER.error("密码错误：{}", e);
-            result.setMsg("密码错误");
-            return result;
         } catch (Exception e) {
-            result.setMsg("登录失败{ " + e.getMessage() +"}");
+            result.setMsg("登录失败{ " + e.getMessage() + "}");
             return result;
         }
         result.setSuccess(true);

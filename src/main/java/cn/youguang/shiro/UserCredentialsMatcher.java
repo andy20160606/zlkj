@@ -2,11 +2,16 @@ package cn.youguang.shiro;
 
 import cn.youguang.entity.User;
 import cn.youguang.service.UserService;
+import cn.youguang.util.Result;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class UserCredentialsMatcher extends SimpleCredentialsMatcher {
 
@@ -18,26 +23,36 @@ public class UserCredentialsMatcher extends SimpleCredentialsMatcher {
     private String appid;
     @Value("${wx.secret}")
     private String secret;
-
-
-
+    @Value("${youguang.center.yxgj.domain}")
+    private String domain;
 
 
     public boolean wxConnect(String wxopenid) {
         return true;
     }
 
+
+    public boolean khConnect(String khwybs, String lsrzm) {
+        Result result = new Result();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            result = mapper.readValue(new URL(domain + "/khLsrz?khwybs=" + khwybs + "&lsrzm=" + lsrzm), Result.class);
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+
+        }
+        return result.isSuccess();
+    }
+
+
     @Override
     @SuppressWarnings(value = "all")
     public boolean doCredentialsMatch(AuthenticationToken token,
                                       AuthenticationInfo info) {
         MyUsernamePasswordToken upt = (MyUsernamePasswordToken) token;
-        System.out.println("upt-username=" + upt.getUsername());
-        System.out.println("upt.getPassword="
-                + String.valueOf(upt.getPassword()));
-        System.out.println("upt.getCredentials" + upt.getCredentials());
-        System.out.println("upt.getPrincipal=" + upt.getPrincipal());
-
         String user = upt.getUsername();
         String pass = String.valueOf(upt.getPassword());
         String loginType = upt.getLoginType();
@@ -47,8 +62,8 @@ public class UserCredentialsMatcher extends SimpleCredentialsMatcher {
             return wxConnect(pass);
         }
 
-        if (loginType.equals("ptlogin")) {
-            return ptConnect(user, pass);
+        if (loginType.equals("khlogin")) {
+            return khConnect(user, pass);
         }
 
 
@@ -64,25 +79,5 @@ public class UserCredentialsMatcher extends SimpleCredentialsMatcher {
         return false;
     }
 
-    private boolean ptConnect(String user, String pass) {
-
-        User u = userService.findUserByLoginName(user);
-        if (u != null && u.getLoginpass().equals(pass)) {
-            return true;
-        }
-        return false;
-
-    }
-
-//    private boolean khConnect(String user, String pass) {
-//
-//        Kh kh = khService.findByLoginnameAndLoginpass(user, pass);
-//
-//
-//        if (kh != null) {
-//            return true;
-//        }
-//        return false;
-//    }
 
 }

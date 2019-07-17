@@ -43,4 +43,13 @@ public class Result implements Serializable {
         this.obj = obj;
     }
 
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "success=" + success +
+                ", msg='" + msg + '\'' +
+                ", obj=" + obj +
+                '}';
+    }
 }
